@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TWITTER · Catalog & Quotation (Bilingual · incl. E-Bike)</title>
+<link rel="preload" href="css/styles.css" as="style">
+<link rel="preload" href="js/app.js" as="script">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div id="loader"><div class="ld-logo"><b>TWITTER</b> BICYCLE</div><div class="ld-bar"><div class="ld-fill"></div></div><div class="ld-tip" id="ldTip">Loading…</div></div>
+
+<div class="toolbar">
+  <button class="tb-menu" id="indexToggle" aria-label="Model index" onclick="toggleIndex()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="tb-brand brand">
+    <div class="tb-brand-main">TWITTER · Merged Catalog &amp; Quotation</div>
+    <div class="tb-brand-sub">Bilingual · CN-RMB / EN-USD EXW · incl. E-Bike</div>
+  </div>
+  <div class="tb-divider"></div>
+  <div class="tb-group">
+    <span class="tb-label" data-tb="catLabel">CATEGORY</span>
+    <div class="tb-pills">
+      <button data-catbtn="all" onclick="setCat('all')">ALL</button>
+      <button data-catbtn="gravel" onclick="setCat('gravel')">GRAVEL</button>
+      <button data-catbtn="road" onclick="setCat('road')">ROAD</button>
+      <button data-catbtn="mtb" onclick="setCat('mtb')">MTB</button>
+      <button data-catbtn="ebike" onclick="setCat('ebike')">E-BIKE</button>
+    </div>
+  </div>
+  <div class="tb-divider"></div>
+  <div class="tb-group">
+    <span class="tb-label" data-tb="tierLabel">PRICE TIER</span>
+    <div class="tb-segment" role="tablist">
+      <button data-tier="Level-3" onclick="setTier('Level-3')">RETAIL</button>
+      <button data-tier="Level-2" onclick="setTier('Level-2')">DEALER</button>
+      <button data-tier="Level-1" onclick="setTier('Level-1')">AGENT</button>
+      <button data-tier="all" onclick="setTier('all')">ALL</button>
+    </div>
+  </div>
+  <div class="tb-spacer"></div>
+  <div class="tb-counter" data-tb="counter"><strong id="tbCount">60</strong><small data-tb="countUnit">MODELS</small></div>
+  <button class="tb-cta" onclick="window.print()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    <span data-tb="pdf">EXPORT PDF</span>
+  </button>
+  <div class="tb-view">
+    <button id="viewGallery" class="on" onclick="setView('gallery')">CATALOG</button>
+    <button id="viewQuote" onclick="setView('table')">QUOTE</button>
+  </div>
+  <button class="tb-lang" onclick="setLang(LANG==='cn'?'en':'cn')">
+    <span data-tb="lang">EN</span>
+  </button>
+</div>
+
+<div class="info-strip">
+  <div class="ig"><span class="lab" id="iLabVer">VERSION</span><span class="val" id="infoVersion">2026</span></div>
+  <div class="ig"><span class="lab" id="iLabCur">CURRENCY / TERMS</span><span class="val" id="infoTerms">USD · EXW</span></div>
+  <div class="ig"><span class="lab" id="iLabUpd">UPDATED</span><span class="val" id="infoDate">2026-09-05</span></div>
+  <div class="ig"><span class="lab" id="iLabMoq">CURRENT MOQ</span><span class="moq" id="infoMoq">ALL TIERS</span></div>
+  <div class="ig brand-legend" id="infoBrands">
+    <span class="b-sensah">SENSAH</span>
+    <span class="b-wheeltop">WHEELTOP</span>
+    <span class="b-shimano">SHIMANO</span>
+    <span class="b-sentyeh">SENTYEH</span>
+    <span class="b-sram">SRAM</span>
+  </div>
+</div>
+
+<aside class="index-panel" id="indexPanel" aria-hidden="true">
+  <div class="index-header">
+    <h3 id="indexTitle">Model Index</h3>
+    <button class="index-close" onclick="toggleIndex()" aria-label="Close">×</button>
+  </div>
+  <div class="index-body" id="indexBody"></div>
+</aside>
+<div class="index-overlay" id="indexOverlay" onclick="toggleIndex()"></div>
+
+<main class="pages" id="pages"></main>
+<div class="modal" id="modal"></div>
+
+<div id="quoteWrap">
+  <div class="qt-sheet">
+    <div class="qt-title">
+      <div>
+        <div class="qt-meta" style="text-align:left"><span class="qt-year" id="qtYear">2026</span></div>
+        <h1 id="qtTitle">ALL <span>Quotation</span></h1>
+      </div>
+      <div class="qt-meta">
+        <span id="qtCur"></span><br>
+        <span id="qtUpd"></span>
+      </div>
+    </div>
+    <div class="qt-strip">
+      <div class="qt-legend" id="qtLegend">
+        <b id="qtLabBrand">Brand</b>
+        <i>SENSAH</i><i class="wt">WHEELTOP</i><i class="sh">SHIMANO</i><i class="sy">SENTYEH</i><i class="sr">SRAM</i>
+      </div>
+      <div class="qt-stats" id="qtStats"></div>
+    </div>
+    <div class="qt-twrap">
+      <table class="qt-table">
+        <colgroup>
+          <col class="qt-col-img"><col class="qt-col-model"><col class="qt-col-mat"><col class="qt-col-size">
+          <col class="qt-col-color"><col class="qt-col-conf"><col class="qt-col-wt">
+          <col class="qt-col-p"><col class="qt-col-p"><col class="qt-col-p"><col class="qt-col-notes">
+        </colgroup>
+        <thead><tr id="qtHead"></tr></thead>
+        <tbody id="qtRows"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="qt-modal" id="qtModal"></div>
+
+<script src="js/app.js"></script>
+<script>
+bootCatalog();
+</script>
+</body>
+</html>

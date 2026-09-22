@@ -1,0 +1,6 @@
+[build]
+  command = "npx prisma generate && npx prisma migrate deploy && npm run build"
+  publish = ".next"
+
+# Next.js 16 在 Netlify 上零配置自动适配（OpenNext adapter）
+# 不需要额外 plugin，Netlify 自动识别 Next.js 项目

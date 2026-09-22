@@ -1,0 +1,233 @@
+// Prisma schema for 骓特自行车拍摄需求管理系统
+// Local dev: SQLite single-file (DATABASE_URL=file:./dev.db)
+// Production: Neon Postgres serverless (DATABASE_URL=postgresql://...)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============ 用户 ============
+model User {
+  id        String    @id @default(cuid())
+  username  String    @unique
+  password  String    // bcrypt hashed
+  name      String    // 显示名称
+  dept      String    // 部门
+  role      String    // admin | reviewer | shooter | submitter
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  demands   Demand[]  @relation("Submitter")
+  sessions  Session[] @relation("Shooter")
+}
+
+// ============ 车型标准库 ============
+model Model {
+  id          String          @id @default(cuid())
+  code        String          @unique                    // 如 TW-R10PRO-ET
+  brand       String
+  series      String
+  name        String
+  enName      String?
+  type        String          // 公路车/山地车/电助力...
+  position    String?
+  status      String          // 在售/已停产/暂不开放
+  launchStatus Boolean        @default(true)
+  image       String?
+  remark      String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  versions    ModelVersion[]
+  demands     Demand[]
+}
+
+model ModelVersion {
+  id        String @id @default(cuid())
+  modelId   String
+  name      String                              // 如 50刀平碳圈版
+
+  // 核心配置组件（冗余存储，方便快速查询）
+  wheelset  String?
+  groupset  String?
+  brake     String?
+  frame     String?
+  handlebar String?
+  seatpost  String?
+  color     String?
+  size      String?
+
+  model     Model  @relation(fields: [modelId], references: [id], onDelete: Cascade)
+}
+
+// ============ 配置标准库 ============
+model Config {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  type      String   // 车架/套件/变速/刹车/轮组/把组/座管/坐垫/轮胎/颜色/尺寸
+  name      String
+  enName    String?
+  remark    String?
+  status    String   @default("active")   // active / inactive
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============ 车型/配置新增申请 ============
+model ModelApp {
+  id        String   @id @default(cuid())
+  code      String
+  brand     String
+  series    String
+  name      String
+  enName    String?
+  type      String?
+  position  String?
+  launchStatus Boolean @default(false)
+  remark    String?
+  status    String   @default("pending")  // pending / approved / rejected
+  createdAt DateTime @default(now())
+  createdBy String
+  reviewedAt DateTime?
+}
+
+model ConfigApp {
+  id         String   @id @default(cuid())
+  type       String
+  name       String
+  enName     String?
+  remark     String?
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+  createdBy  String
+  reviewedAt DateTime?
+}
+
+// ============ 拍摄需求 ============
+model Demand {
+  id              String   @id @default(cuid())
+  no              String   @unique                // REQ-20260921-001
+  title           String
+  submitterId     String
+  submitterName   String
+  submitterDept   String?
+  direction       String                          // 国内/海外/外贸/电商/品牌/其他
+  contact         String?
+
+  purpose         String   // JSON array string: ["抖音","TikTok"]
+  modelId         String
+  modelName       String
+  versionId       String?
+  versionName     String?
+  components      String? // JSON: {wheelset,groupset,...}
+  content         String  // JSON array: ["整车展示","细节特写"]
+  needPerson      String?
+  scenes          String? // JSON array
+  aspectRatio     String? // JSON array
+  videoDuration   String? // JSON array
+
+  expectStart     String?
+  expectEnd       String?
+  urgency         String   @default("普通")
+  priority        String   @default("P2")          // P0/P1/P2/P3
+
+  description     String?
+  status          String   @default("draft")       // draft/pending/confirmed/scheduled/shooting/review/done/archived/cancelled/revision
+  reviewerId      String?
+  reviewedAt      DateTime?
+  revisionNote    String?
+  scheduleNote    String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  submitter       User?    @relation("Submitter", fields: [submitterId], references: [id])
+  model           Model    @relation(fields: [modelId], references: [id])
+  sessions        SessionDemand[]
+  tasks           Task[]
+  history         DemandHistory[]
+}
+
+model DemandHistory {
+  id        String   @id @default(cuid())
+  demandId  String
+  time      DateTime @default(now())
+  user      String
+  action    String
+  toStatus  String
+  detail    String?
+
+  demand    Demand   @relation(fields: [demandId], references: [id], onDelete: Cascade)
+}
+
+// ============ 拍摄场次 ============
+model Session {
+  id            String   @id @default(cuid())
+  no            String   @unique                   // SHOOT-20260923-001
+  title         String
+  date          String   // YYYY-MM-DD
+  startTime     String?  // HH:mm
+  endTime       String?  // HH:mm
+  location      String?
+  shooterId     String?
+  shooterName   String?
+  status        String   @default("scheduled")     // scheduled/shooting/review/done/cancelled
+  vehicleCount  Int      @default(1)
+  note          String?
+
+  createdAt     DateTime @default(now())
+
+  shooter       User?    @relation("Shooter", fields: [shooterId], references: [id])
+  demands       SessionDemand[]
+  tasks         Task[]
+}
+
+model SessionDemand {
+  sessionId String
+  demandId  String
+
+  session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  demand    Demand  @relation(fields: [demandId], references: [id], onDelete: Cascade)
+
+  @@id([sessionId, demandId])
+}
+
+// ============ 拍摄任务 ============
+model Task {
+  id             String   @id @default(cuid())
+  no             String   @unique                  // TASK-20260923-001
+  sessionId      String
+  demandId       String
+  title          String
+  content        String? // JSON array
+  aspectRatio    String? // JSON array
+  videoDuration  String? // JSON array
+  shooterId      String?
+  shooterName    String?
+  status         String   @default("pending")      // pending/shooting/review/done/cancelled
+  materialUrl    String?
+  remark         String?
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  session        Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  demand         Demand  @relation(fields: [demandId], references: [id], onDelete: Cascade)
+}
+
+// ============ 操作记录 ============
+model Record {
+  id         String   @id @default(cuid())
+  time       DateTime @default(now())
+  user       String
+  role       String?
+  action     String
+  targetType String
+  targetId   String
+  detail     String?
+}
