@@ -359,6 +359,7 @@ export type SessionDemandCreateOrConnectWithoutDemandInput = {
 
 export type SessionDemandCreateManyDemandInputEnvelope = {
   data: Prisma.SessionDemandCreateManyDemandInput | Prisma.SessionDemandCreateManyDemandInput[]
+  skipDuplicates?: boolean
 }
 
 export type SessionDemandUpsertWithWhereUniqueWithoutDemandInput = {
@@ -400,6 +401,7 @@ export type SessionDemandCreateOrConnectWithoutSessionInput = {
 
 export type SessionDemandCreateManySessionInputEnvelope = {
   data: Prisma.SessionDemandCreateManySessionInput | Prisma.SessionDemandCreateManySessionInput[]
+  skipDuplicates?: boolean
 }
 
 export type SessionDemandUpsertWithWhereUniqueWithoutSessionInput = {
@@ -1157,6 +1159,7 @@ export type SessionDemandCreateManyArgs<ExtArgs extends runtime.Types.Extensions
    * The data used to create many SessionDemands.
    */
   data: Prisma.SessionDemandCreateManyInput | Prisma.SessionDemandCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1175,6 +1178,7 @@ export type SessionDemandCreateManyAndReturnArgs<ExtArgs extends runtime.Types.E
    * The data used to create many SessionDemands.
    */
   data: Prisma.SessionDemandCreateManyInput | Prisma.SessionDemandCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

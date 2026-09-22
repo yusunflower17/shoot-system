@@ -1095,6 +1095,7 @@ export type ConfigAppCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * The data used to create many ConfigApps.
    */
   data: Prisma.ConfigAppCreateManyInput | Prisma.ConfigAppCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1113,6 +1114,7 @@ export type ConfigAppCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Exten
    * The data used to create many ConfigApps.
    */
   data: Prisma.ConfigAppCreateManyInput | Prisma.ConfigAppCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**

@@ -524,6 +524,7 @@ export type ModelVersionCreateOrConnectWithoutModelInput = {
 
 export type ModelVersionCreateManyModelInputEnvelope = {
   data: Prisma.ModelVersionCreateManyModelInput | Prisma.ModelVersionCreateManyModelInput[]
+  skipDuplicates?: boolean
 }
 
 export type ModelVersionUpsertWithWhereUniqueWithoutModelInput = {
@@ -1364,6 +1365,7 @@ export type ModelVersionCreateManyArgs<ExtArgs extends runtime.Types.Extensions.
    * The data used to create many ModelVersions.
    */
   data: Prisma.ModelVersionCreateManyInput | Prisma.ModelVersionCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1382,6 +1384,7 @@ export type ModelVersionCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Ex
    * The data used to create many ModelVersions.
    */
   data: Prisma.ModelVersionCreateManyInput | Prisma.ModelVersionCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */
