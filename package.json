@@ -3,14 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
     "build": "next build",
+    "dev": "next dev",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0",
+    "@neondatabase/serverless": "^1.1.0",
+    "@opennextjs/cloudflare": "^1.20.6",
+    "@prisma/adapter-better-sqlite3": "^7.10.0",
+    "@prisma/adapter-neon": "^7.10.0",
+    "@prisma/client": "6.19.3",
     "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^13.0.3",
     "cookie": "^2.0.1",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.47.0",
@@ -27,9 +36,10 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
-    "prisma": "^5.22.0",
+    "prisma": "6.19.3",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.136.1"
   }
 }

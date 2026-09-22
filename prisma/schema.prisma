@@ -2,8 +2,11 @@
 // Local dev: SQLite single-file (DATABASE_URL=file:./dev.db)
 // Production: Neon Postgres serverless (DATABASE_URL=postgresql://...)
 
+// Production: Neon Postgres (无 Rust 引擎 + adapter-neon, Workers 兼容)
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client"
+  engineType = "client"
+  output     = "../src/generated/prisma-client"
 }
 
 datasource db {
