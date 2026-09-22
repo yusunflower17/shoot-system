@@ -13,6 +13,7 @@ export default function LoginPage() {
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ username: u, password: p }),
       });
       if (!res.ok) { const e = await res.json().catch(() => ({})); setError(e.error || '登录失败'); return; }

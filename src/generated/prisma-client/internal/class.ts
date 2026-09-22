@@ -23,7 +23,7 @@ const config: runtime.GetPrismaClientConfig = {
       "value": "prisma-client"
     },
     "output": {
-      "value": "D:\\trae\\国内外提交表单\\shoot-system\\src\\generated\\prisma-client",
+      "value": "D:\\shoot-sys-lnk\\src\\generated\\prisma-client",
       "fromEnvVar": null
     },
     "config": {
@@ -37,7 +37,7 @@ const config: runtime.GetPrismaClientConfig = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "D:\\trae\\国内外提交表单\\shoot-system\\prisma\\schema.prisma",
+    "sourceFilePath": "D:\\shoot-sys-lnk\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativePath": "../../../prisma",
