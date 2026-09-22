@@ -1,5 +1,6 @@
 [build]
-  command = "npx prisma generate && npx prisma migrate deploy && npm run build"
+  # 显式指定 Postgres schema（Netlify 生产用）
+  command = "npx prisma generate --schema=prisma/schema.prisma && npx prisma migrate deploy --schema=prisma/schema.prisma && npm run build"
   publish = ".next"
 
 # Next.js 16 在 Netlify 上零配置自动适配（OpenNext adapter）
