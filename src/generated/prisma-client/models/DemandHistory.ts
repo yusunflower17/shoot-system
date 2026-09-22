@@ -428,7 +428,6 @@ export type DemandHistoryCreateOrConnectWithoutDemandInput = {
 
 export type DemandHistoryCreateManyDemandInputEnvelope = {
   data: Prisma.DemandHistoryCreateManyDemandInput | Prisma.DemandHistoryCreateManyDemandInput[]
-  skipDuplicates?: boolean
 }
 
 export type DemandHistoryUpsertWithWhereUniqueWithoutDemandInput = {
@@ -1225,7 +1224,6 @@ export type DemandHistoryCreateManyArgs<ExtArgs extends runtime.Types.Extensions
    * The data used to create many DemandHistories.
    */
   data: Prisma.DemandHistoryCreateManyInput | Prisma.DemandHistoryCreateManyInput[]
-  skipDuplicates?: boolean
 }
 
 /**
@@ -1244,7 +1242,6 @@ export type DemandHistoryCreateManyAndReturnArgs<ExtArgs extends runtime.Types.E
    * The data used to create many DemandHistories.
    */
   data: Prisma.DemandHistoryCreateManyInput | Prisma.DemandHistoryCreateManyInput[]
-  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

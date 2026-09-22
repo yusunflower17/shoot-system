@@ -1067,7 +1067,6 @@ export type RecordCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * The data used to create many Records.
    */
   data: Prisma.RecordCreateManyInput | Prisma.RecordCreateManyInput[]
-  skipDuplicates?: boolean
 }
 
 /**
@@ -1086,7 +1085,6 @@ export type RecordCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensio
    * The data used to create many Records.
    */
   data: Prisma.RecordCreateManyInput | Prisma.RecordCreateManyInput[]
-  skipDuplicates?: boolean
 }
 
 /**

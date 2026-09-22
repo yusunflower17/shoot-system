@@ -1122,7 +1122,6 @@ export type DemandCreateOrConnectWithoutSubmitterInput = {
 
 export type DemandCreateManySubmitterInputEnvelope = {
   data: Prisma.DemandCreateManySubmitterInput | Prisma.DemandCreateManySubmitterInput[]
-  skipDuplicates?: boolean
 }
 
 export type DemandUpsertWithWhereUniqueWithoutSubmitterInput = {
@@ -1257,7 +1256,6 @@ export type DemandCreateOrConnectWithoutModelInput = {
 
 export type DemandCreateManyModelInputEnvelope = {
   data: Prisma.DemandCreateManyModelInput | Prisma.DemandCreateManyModelInput[]
-  skipDuplicates?: boolean
 }
 
 export type DemandUpsertWithWhereUniqueWithoutModelInput = {
@@ -2974,7 +2972,6 @@ export type DemandCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * The data used to create many Demands.
    */
   data: Prisma.DemandCreateManyInput | Prisma.DemandCreateManyInput[]
-  skipDuplicates?: boolean
 }
 
 /**
@@ -2993,7 +2990,6 @@ export type DemandCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensio
    * The data used to create many Demands.
    */
   data: Prisma.DemandCreateManyInput | Prisma.DemandCreateManyInput[]
-  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

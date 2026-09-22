@@ -1239,7 +1239,6 @@ export type ModelAppCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * The data used to create many ModelApps.
    */
   data: Prisma.ModelAppCreateManyInput | Prisma.ModelAppCreateManyInput[]
-  skipDuplicates?: boolean
 }
 
 /**
@@ -1258,7 +1257,6 @@ export type ModelAppCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extens
    * The data used to create many ModelApps.
    */
   data: Prisma.ModelAppCreateManyInput | Prisma.ModelAppCreateManyInput[]
-  skipDuplicates?: boolean
 }
 
 /**
