@@ -13,15 +13,15 @@
 	},
 	"services": [
 		{
-			// Self-reference service binding, the service name must match the worker name
-			// see https://opennext.js.org/cloudflare/caching
 			"binding": "WORKER_SELF_REFERENCE",
 			"service": "shoot-system"
 		}
 	],
 	"images": {
-		// Enable image optimization
-		// see https://opennext.js.org/cloudflare/howtos/image
 		"binding": "IMAGES"
+	},
+	"vars": {
+		"DATABASE_URL": "postgresql://neondb_owner:npg_8AnVIGPH1jOu@ep-crimson-art-b59gdsro-pooler.c-7.us-east-2.aws.neon.tech/neondb?sslmode=require",
+		"JWT_SECRET": "tw-bike-shoot-system-secret-2026-prod"
 	}
 }
