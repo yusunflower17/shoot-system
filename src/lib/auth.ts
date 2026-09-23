@@ -87,7 +87,9 @@ export function genNo(prefix: string, count: number): string {
   const d = new Date();
   const dateStr = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
   const num = String(count + 1).padStart(3, '0');
-  return `${prefix}-${dateStr}-${num}`;
+  // 加随机后缀防止并发重复（Postgres unique 约束）
+  const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `${prefix}-${dateStr}-${num}${rand}`;
 }
 
 export function safeParseJSON<T>(str: string | null | undefined, fallback: T): T {

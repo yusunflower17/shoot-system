@@ -9,7 +9,8 @@ interface User { id: string; username: string; name: string; role: string; dept:
 // ============ 简单 fetch 封装 ============
 async function api<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(path, { credentials: 'include', ...options, headers: { 'Content-Type': 'application/json', ...options?.headers } });
-  if (res.status === 401) { window.location.href = '/login'; throw new Error('未登录'); }
+  // 401 由调用方处理（App 初始化时自动访客登录）
+  if (res.status === 401) throw new Error('UNAUTHORIZED');
   if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || '请求失败'); }
   return res.json();
 }
@@ -98,16 +99,29 @@ export default function App() {
   const { show, node: toastNode } = useToast();
 
   useEffect(() => {
-    api<User>('/api/me').then(u => setUser(u)).catch(() => {
-      window.location.href = '/login';
-    });
+    (async () => {
+      try {
+        const u = await api<User>('/api/me');
+        setUser(u);
+      } catch {
+        // 未登录 → 自动访客登录
+        try {
+          await fetch('/api/auth/guest', { method: 'POST', credentials: 'include' });
+          const u = await api<User>('/api/me');
+          setUser(u);
+        } catch {
+          // 彻底失败才跳 login
+          window.location.href = '/login';
+        }
+      }
+    })();
   }, []);
 
   if (!user) return <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}><div className="spinner" /></div>;
 
   return (
     <>
-      <TopBar user={user} showToast={show} onLogout={() => { api('/api/auth/logout', { method: 'POST' }).then(() => window.location.href = '/login'); }} />
+      <TopBar user={user} setUser={setUser} showToast={show} onLogout={() => { api('/api/auth/logout', { method: 'POST' }).then(() => window.location.reload()); }} />
       <div className="app-layout">
         <Sidebar hash={hash} setHash={setHash} user={user} />
         <div className="content">
@@ -119,20 +133,30 @@ export default function App() {
   );
 }
 
-function TopBar({ user, showToast, onLogout }: any) {
+function TopBar({ user, setUser, showToast, onLogout }: any) {
   const roleMap: Record<string, string> = { admin: '管理员', reviewer: '审核负责人', shooter: '拍摄团队', submitter: '业务人员' };
-  const [switching, setSwitching] = useState(false);
-  const switchRole = async (role: string) => {
-    const names: Record<string, string> = { admin: '管理员', reviewer: '王五', shooter: '张三', submitter: '钱七' };
-    const depts: Record<string, string> = { admin: '管理', reviewer: '产品运营', shooter: '短视频团队', submitter: '国内业务' };
-    localStorage.setItem('mock_role', role);
-    document.getElementById('mock-user-name')!.textContent = names[role];
-    document.getElementById('mock-user-role')!.textContent = roleMap[role];
-    document.getElementById('mock-user-avatar')!.textContent = names[role].charAt(0);
-    showToast(`已切换为：${roleMap[role]}`, 'info');
-    setSwitching(false);
-    window.location.reload();
+  const [adminModal, setAdminModal] = useState(false);
+  const [adminUser, setAdminUser] = useState('');
+  const [adminPass, setAdminPass] = useState('');
+  const [adminLoading, setAdminLoading] = useState(false);
+
+  const doAdminLogin = async () => {
+    if (!adminUser || !adminPass) { showToast('请输入账号密码', 'error'); return; }
+    setAdminLoading(true);
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', credentials: 'include' },
+        body: JSON.stringify({ username: adminUser, password: adminPass }),
+      });
+      if (!res.ok) { const e = await res.json(); showToast(e.error || '登录失败', 'error'); return; }
+      const u = await res.json();
+      setUser(u);
+      showToast(`欢迎回来，${u.name}！`, 'success');
+      setAdminModal(false); setAdminUser(''); setAdminPass('');
+    } catch { showToast('网络错误', 'error'); }
+    finally { setAdminLoading(false); }
   };
+
   return (
     <div className="top-bar">
       <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
@@ -144,20 +168,45 @@ function TopBar({ user, showToast, onLogout }: any) {
           <span style={{ fontSize: 11, color: 'var(--ink-4)', background: 'var(--bg-soft)', padding: '4px 10px', borderRadius: 12, marginRight: 8 }}>访客模式 · 仅可提报和查阅</span>
         )}
         {user.username === 'guest' && (
-          <button className="btn-ghost btn-sm" onClick={() => window.location.href = '/login'} style={{ marginRight: 8 }}>切换为管理员</button>
+          <button className="btn-ghost btn-sm" onClick={() => setAdminModal(true)} style={{ marginRight: 8 }}>管理员登录</button>
         )}
         {user.username !== 'guest' && (
           <button className="btn-ghost btn-sm" onClick={async () => {
             await fetch('/api/auth/logout', { method: 'POST' });
-            await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: 'guest', password: 'guest123' }) });
-            window.location.reload();
+            await fetch('/api/auth/guest', { method: 'POST', credentials: 'include' });
+            const u = await fetch('/api/me', { credentials: 'include' }).then(r => r.json());
+            setUser(u);
+            showToast('已切换为访客模式', 'info');
           }} style={{ marginRight: 8 }}>切换为访客</button>
         )}
         <div className="user-avatar">{user.name.charAt(0)}</div>
         <span>{user.name}</span>
-        <span className="user-role-tag">{roleMap[user.role]}</span>
+        <span className="user-role-tag">{roleMap[user.role] || user.role}</span>
         <button className="btn-ghost btn-sm" onClick={onLogout}>退出</button>
       </div>
+
+      {/* 管理员登录 Modal */}
+      {adminModal && (
+        <div className="modal-overlay" onClick={() => setAdminModal(false)}>
+          <div className="modal-box" style={{ maxWidth: 360 }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">管理员登录</h3>
+              <button className="btn-ghost" onClick={() => setAdminModal(false)}>✕</button>
+            </div>
+            <div className="modal-body">
+              <p style={{ fontSize: 12, color: 'var(--ink-4)', marginBottom: 14 }}>登录后解锁完整拍摄/审核/排期功能</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <input className="input" placeholder="用户名 (admin / wangwu)" value={adminUser} onChange={e => setAdminUser(e.target.value)} />
+                <input className="input" type="password" placeholder="密码" value={adminPass} onChange={e => setAdminPass(e.target.value)} onKeyDown={e => e.key === 'Enter' && doAdminLogin()} />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-ghost" onClick={() => setAdminModal(false)}>取消</button>
+              <button className="btn-primary" onClick={doAdminLogin} disabled={adminLoading}>{adminLoading ? '登录中...' : '登录'}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

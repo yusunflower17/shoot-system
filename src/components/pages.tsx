@@ -9,7 +9,7 @@ type User = { id: string; username: string; name: string; role: string; dept: st
 // 这些是从 App.tsx 引入的——为避免循环依赖，直接内联公共组件
 export async function api<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(path, { credentials: 'include', ...options, headers: { 'Content-Type': 'application/json', ...options?.headers } });
-  if (res.status === 401) { window.location.href = '/login'; throw new Error('未登录'); }
+  if (res.status === 401) throw new Error('UNAUTHORIZED');
   if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || '请求失败'); }
   return res.json();
 }

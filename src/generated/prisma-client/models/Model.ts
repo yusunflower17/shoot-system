@@ -1543,6 +1543,7 @@ export type ModelCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * The data used to create many Models.
    */
   data: Prisma.ModelCreateManyInput | Prisma.ModelCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1561,6 +1562,7 @@ export type ModelCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extension
    * The data used to create many Models.
    */
   data: Prisma.ModelCreateManyInput | Prisma.ModelCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**

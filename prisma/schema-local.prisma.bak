@@ -1,9 +1,8 @@
 // Prisma schema for 骓特自行车拍摄需求管理系统
-// Local dev: SQLite single-file (DATABASE_URL=file:./dev.db)
-// Production: Neon Postgres serverless (DATABASE_URL=postgresql://...)
+// 本地开发用 SQLite（dev.db 文件）
+// 启动：PRISMA_SCHEMA_FILE=prisma/schema-local.prisma npx next dev
 
-// Vercel + Neon Postgres (engineType=client + adapter-neon HTTP)
-// 本地 migrate 时临时去掉 engineType（native engine 需要做 DDL）
+// Local dev: SQLite (better-sqlite3 adapter)
 generator client {
   provider   = "prisma-client"
   engineType = "client"
@@ -11,8 +10,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 // ============ 用户 ============

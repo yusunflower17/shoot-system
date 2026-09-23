@@ -62,19 +62,14 @@ export async function DELETE(_: Request, { params }) {
 
   const demandIds = existing.demands.map(d => d.demandId);
 
-  await prisma.$transaction([
-    // 删除 session 关联表
-    prisma.sessionDemand.deleteMany({ where: { sessionId: id } }),
-    // 删除 session 下所有 task
-    prisma.task.deleteMany({ where: { sessionId: id } }),
-    // 删除 session 本身
-    prisma.session.delete({ where: { id } }),
-    // 回退关联 demand 状态
-    prisma.demand.updateMany({
-      where: { id: { in: demandIds }, status: 'scheduled' },
-      data: { status: 'confirmed' },
-    }),
-  ]);
+  // 分步删除（$transaction 在 Neon HTTP adapter 上不支持）
+  await prisma.sessionDemand.deleteMany({ where: { sessionId: id } });
+  await prisma.task.deleteMany({ where: { sessionId: id } });
+  await prisma.session.delete({ where: { id } });
+  await prisma.demand.updateMany({
+    where: { id: { in: demandIds }, status: 'scheduled' },
+    data: { status: 'confirmed' },
+  });
 
   return NextResponse.json({ ok: true, demandIds });
 }

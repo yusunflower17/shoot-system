@@ -67,8 +67,17 @@ export async function POST(req: Request) {
       priority: body.priority || (body.urgency === '紧急' ? 'P0' : body.urgency === '重要' ? 'P1' : 'P2'),
       description: body.description,
       status: body.status || 'draft',
-      history: { create: { time: new Date(), user: user.name, action: '创建需求', toStatus: body.status || 'draft' } },
     },
   });
+
+  // 手动写历史（nested write 在 Neon HTTP adapter 上不支持）
+  await prisma.demandHistory.create({
+    data: {
+      demandId: demand.id, time: new Date(),
+      user: user.name, action: '创建需求',
+      toStatus: body.status || 'draft',
+    },
+  });
+
   return NextResponse.json(demand, { status: 201 });
 }

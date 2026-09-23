@@ -33,9 +33,13 @@ export async function POST(req: Request) {
       vehicleCount: body.vehicleCount || 1,
       note: body.note || null,
       status: 'scheduled',
-      demands: { create: demandIds.map(demandId => ({ demandId })) },
     },
   });
+
+  // 手动写 SessionDemand 关联（nested create 在 Neon HTTP adapter 上不支持）
+  for (const demandId of demandIds) {
+    await prisma.sessionDemand.create({ data: { sessionId: session.id, demandId } });
+  }
 
   // 更新关联需求的状态为已排期
   await prisma.demand.updateMany({

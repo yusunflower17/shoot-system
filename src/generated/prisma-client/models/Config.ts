@@ -1095,6 +1095,7 @@ export type ConfigCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * The data used to create many Configs.
    */
   data: Prisma.ConfigCreateManyInput | Prisma.ConfigCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1113,6 +1114,7 @@ export type ConfigCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensio
    * The data used to create many Configs.
    */
   data: Prisma.ConfigCreateManyInput | Prisma.ConfigCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
