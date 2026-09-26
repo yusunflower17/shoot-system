@@ -1,0 +1,231 @@
+// Local dev: SQLite single-file (better-sqlite3 adapter, engineType=client)
+generator client {
+  provider   = "prisma-client"
+  engineType = "client"
+  output     = "../src/generated/prisma-client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============ 用户 ============
+model User {
+  id        String    @id @default(cuid())
+  username  String    @unique
+  password  String
+  name      String
+  dept      String
+  role      String    // admin | reviewer | shooter | submitter
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  demands  Demand[]  @relation("Submitter")
+  sessions Session[] @relation("Shooter")
+}
+
+// ============ 车型标准库 ============
+model Model {
+  id          String          @id @default(cuid())
+  code        String          @unique
+  brand       String
+  series      String
+  name        String
+  enName      String?
+  type        String
+  position    String?
+  status      String
+  launchStatus Boolean        @default(true)
+  image       String?
+  remark      String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  versions ModelVersion[]
+  demands  Demand[]
+}
+
+model ModelVersion {
+  id        String @id @default(cuid())
+  modelId   String
+  name      String
+
+  wheelset  String?
+  groupset  String?
+  brake     String?
+  frame     String?
+  handlebar String?
+  seatpost  String?
+  color     String?
+  size      String?
+
+  model Model @relation(fields: [modelId], references: [id], onDelete: Cascade)
+}
+
+// ============ 配置标准库 ============
+model Config {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  type      String
+  name      String
+  enName    String?
+  remark    String?
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============ 车型/配置新增申请 ============
+model ModelApp {
+  id           String   @id @default(cuid())
+  code         String
+  brand        String
+  series       String
+  name         String
+  enName       String?
+  type         String?
+  position     String?
+  launchStatus Boolean @default(false)
+  remark       String?
+  status       String   @default("pending")
+  createdAt    DateTime @default(now())
+  createdBy    String
+  reviewedAt   DateTime?
+}
+
+model ConfigApp {
+  id         String   @id @default(cuid())
+  type       String
+  name       String
+  enName     String?
+  remark     String?
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+  createdBy  String
+  reviewedAt DateTime?
+}
+
+// ============ 拍摄需求 ============
+model Demand {
+  id              String   @id @default(cuid())
+  no              String   @unique
+  title           String
+  submitterId     String
+  submitterName   String
+  submitterDept   String?
+  direction       String
+  contact         String?
+
+  purpose         String
+  modelId         String
+  modelName       String
+  versionId       String?
+  versionName     String?
+  components      String?
+  content         String
+  needPerson      String?
+  scenes          String?
+  aspectRatio     String?
+  videoDuration   String?
+
+  expectStart     String?
+  expectEnd       String?
+  urgency         String   @default("普通")
+  priority        String   @default("P2")
+
+  description     String?
+  status          String   @default("draft")
+  reviewerId      String?
+  reviewedAt      DateTime?
+  revisionNote    String?
+  scheduleNote    String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  submitter User?         @relation("Submitter", fields: [submitterId], references: [id])
+  model     Model         @relation(fields: [modelId], references: [id])
+  sessions  SessionDemand[]
+  tasks     Task[]
+  history   DemandHistory[]
+}
+
+model DemandHistory {
+  id        String   @id @default(cuid())
+  demandId  String
+  time      DateTime @default(now())
+  user      String
+  action    String
+  toStatus  String
+  detail    String?
+
+  demand Demand @relation(fields: [demandId], references: [id], onDelete: Cascade)
+}
+
+// ============ 拍摄场次 ============
+model Session {
+  id            String   @id @default(cuid())
+  no            String   @unique
+  title         String
+  date          String
+  startTime     String?
+  endTime       String?
+  location      String?
+  shooterId     String?
+  shooterName   String?
+  status        String   @default("scheduled")
+  vehicleCount  Int      @default(1)
+  note          String?
+
+  createdAt DateTime @default(now())
+
+  shooter  User?         @relation("Shooter", fields: [shooterId], references: [id])
+  demands  SessionDemand[]
+  tasks    Task[]
+}
+
+model SessionDemand {
+  sessionId String
+  demandId  String
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  demand  Demand  @relation(fields: [demandId], references: [id], onDelete: Cascade)
+
+  @@id([sessionId, demandId])
+}
+
+// ============ 拍摄任务 ============
+model Task {
+  id             String   @id @default(cuid())
+  no             String   @unique
+  sessionId      String
+  demandId       String
+  title          String
+  content        String?
+  aspectRatio    String?
+  videoDuration  String?
+  shooterId      String?
+  shooterName    String?
+  status         String   @default("pending")
+  materialUrl    String?
+  remark         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  demand  Demand  @relation(fields: [demandId], references: [id], onDelete: Cascade)
+}
+
+// ============ 操作记录 ============
+model Record {
+  id         String   @id @default(cuid())
+  time       DateTime @default(now())
+  user       String
+  role       String?
+  action     String
+  targetType String
+  targetId   String
+  detail     String?
+}

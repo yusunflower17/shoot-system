@@ -1,0 +1,76 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# prisma local dev database
+prisma/dev.db
+prisma/dev.db-journal
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# OpenNext
+.open-next
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+# 真实 wrangler 配置含明文 DB 密码/JWT，禁止提交（用 wrangler.example.jsonc 占位）
+wrangler.jsonc
+
+.vercel
+
+# Tencent Cloud EdgeOne
+.env
+.edgeone/*
+.tef_dist/*
+
+# Local Netlify folder
+.netlify
+
+# dependency backup dir (renamed during install repair) — not source
+/node_modules_bak
+
+# local logs & temp helper scripts (session artifacts)
+*.log
+gh_setup.py
+install_helper.py
+apply_fixes.py
+*.genie
+.wbapp*

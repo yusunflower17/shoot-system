@@ -1,0 +1,15 @@
+[build]
+  # 显式指定 Postgres schema（Netlify 生产用）
+  command = "npx prisma generate --schema=prisma/schema.prisma && npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+# Next.js 在 Netlify 上零配置自动适配（OpenNext adapter）
+# 不需要额外 plugin，Netlify 自动识别 Next.js 项目
+#
+# === 环境变量（在 Netlify 后台 Environment variables 填写）===
+# DATABASE_URL = postgresql://...   （Neon pooled 连接串，已在 wrangler.jsonc 的 vars.DATABASE_URL）
+# JWT_SECRET   = 你自己的随机长字符串（已在 wrangler.jsonc 的 vars.JWT_SECRET）
